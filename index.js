@@ -81,7 +81,7 @@ request.get(req, (error, response, body) => {
             },
             {
               'name': 'name',
-              'value': `${config.hostname}.${config.domain}`
+              'value': config.hostname
             },
             {
               'name': 'content',
