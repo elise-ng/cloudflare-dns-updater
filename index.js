@@ -72,24 +72,12 @@ request.get(req, (error, response, body) => {
       let req = {
         method: 'PUT',
         url: `https://api.cloudflare.com/client/v4/zones/${encodeURI(zoneID)}/dns_records/${encodeURI(recordID)}`,
-        postData: {
-          mimeType: 'application/json',
-          params: [
-            {
-              'name': 'type',
-              'value': 'A'
-            },
-            {
-              'name': 'name',
-              'value': config.hostname
-            },
-            {
-              'name': 'content',
-              'value': myIP
-            }
-          ]
-        },
-        json: true
+        headers: CFAuthHeader,
+        json: {
+          'type': 'A',
+          'name': config.hostname,
+          'content': myIP
+        }
       }
       request(req, (error, response, body) => {
         if (error) {
@@ -100,7 +88,11 @@ request.get(req, (error, response, body) => {
           console.log(`Error updating DNS record: HTTP Error ${response.statusCode}`)
           process.exit()
         }
-        console.log('DNS Record updated successfully.')
+        if (body['success']) {
+          console.log('DNS Record updated successfully.')
+        } else {
+          console.log('Error updating DNS record: ', body['errors'][0]['message'])
+        }
       })
     })
   })
