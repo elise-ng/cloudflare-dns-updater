@@ -8,22 +8,31 @@ const CFAuthHeader = {
   'X-Auth-Email': config.email,
   'X-Auth-Key': config.token
 }
+var myIP = ''
+var zoneID = ''
+var recordID = ''
 // Get Public IP
-let req = {
-  url: 'https://api.ipify.org?format=json',
-  json: true
-}
-request.get(req, (error, response, body) => {
-  if (error) {
-    console.log('Error getting public ip address: ', error)
-    process.exit()
+let getPublicIP = new Promise((resolve, reject) => {
+  let req = {
+    url: 'https://api.ipify.org?format=json',
+    json: true
   }
-  if (response.statusCode < 200 && response.statusCode > 299) {
-    console.log(`Error getting public ip address: HTTP Error ${response.statusCode}`)
-    process.exit()
-  }
-  let myIP = body['ip']
-  console.log(`Public IP Address: ${myIP}`)
+  request.get(req, (error, response, body) => {
+    if (error) {
+      console.log('Error getting public ip address: ', error)
+      reject()
+    }
+    if (response.statusCode < 200 && response.statusCode > 299) {
+      console.log(`Error getting public ip address: HTTP Error ${response.statusCode}`)
+      reject()
+    }
+    myIP = body['ip']
+    console.log(`Public IP Address: ${myIP}`)
+    resolve()
+  })
+})
+
+let getIDs = new Promise((resolve, reject) => {
   // Get Zone ID
   let req = {
     method: 'GET',
@@ -34,17 +43,17 @@ request.get(req, (error, response, body) => {
   request(req, (error, response, body) => {
     if (error) {
       console.log('Error getting Zone ID: ', error)
-      process.exit()
+      reject()
     }
     if (response.statusCode < 200 && response.statusCode > 299) {
       console.log(`Error getting Zone ID: HTTP Error ${response.statusCode}`)
-      process.exit()
+      reject()
     }
     if (body['result'].length === 0) {
       console.log('Error: Zone not found')
-      process.exit()
+      reject()
     }
-    let zoneID = body['result'][0]['id']
+    zoneID = body['result'][0]['id']
     console.log(`Zone ID: ${zoneID}`)
     // Get DNS Record ID
     let req = {
@@ -56,44 +65,50 @@ request.get(req, (error, response, body) => {
     request(req, (error, response, body) => {
       if (error) {
         console.log('Error getting DNS record id: ', error)
-        process.exit()
+        reject()
       }
       if (response.statusCode < 200 && response.statusCode > 299) {
         console.log(`Error getting DNS record id: HTTP Error ${response.statusCode}`)
-        process.exit()
+        reject()
       }
       if (body['result'].length === 0) {
         console.log('Error: DNS record not found, have you set up your hostname on CloudFlare yet?')
-        process.exit()
+        reject()
       }
-      let recordID = body['result'][0]['id']
+      recordID = body['result'][0]['id']
       console.log(`DNS Record ID: ${recordID}`)
-      // Update DNS Record
-      let req = {
-        method: 'PUT',
-        url: `https://api.cloudflare.com/client/v4/zones/${encodeURI(zoneID)}/dns_records/${encodeURI(recordID)}`,
-        headers: CFAuthHeader,
-        json: {
-          'type': 'A',
-          'name': config.hostname,
-          'content': myIP
-        }
-      }
-      request(req, (error, response, body) => {
-        if (error) {
-          console.log('Error updating DNS record: ', error)
-          process.exit()
-        }
-        if (response.statusCode < 200 && response.statusCode > 299) {
-          console.log(`Error updating DNS record: HTTP Error ${response.statusCode}`)
-          process.exit()
-        }
-        if (body['success']) {
-          console.log('DNS Record updated successfully.')
-        } else {
-          console.log('Error updating DNS record: ', body['errors'][0]['message'])
-        }
-      })
+      resolve()
     })
   })
+})
+
+Promise.all([getPublicIP, getIDs]).then(result => {
+  // Update DNS Record
+  let req = {
+    method: 'PUT',
+    url: `https://api.cloudflare.com/client/v4/zones/${encodeURI(zoneID)}/dns_records/${encodeURI(recordID)}`,
+    headers: CFAuthHeader,
+    json: {
+      'type': 'A',
+      'name': config.hostname,
+      'content': myIP
+    }
+  }
+  request(req, (error, response, body) => {
+    if (error) {
+      console.log('Error updating DNS record: ', error)
+      process.exit()
+    }
+    if (response.statusCode < 200 && response.statusCode > 299) {
+      console.log(`Error updating DNS record: HTTP Error ${response.statusCode}`)
+      process.exit()
+    }
+    if (body['success']) {
+      console.log('DNS Record updated successfully.')
+    } else {
+      console.log('Error updating DNS record: ', body['errors'][0]['message'])
+    }
+  })
+}).catch(error => {
+  console.log('Fatal error occured. Exiting...')
 })
