@@ -9,7 +9,7 @@
   "author": "Chihim Ng",
   "license": "MIT",
   "dependencies": {
-    "request": "^2.81.0"
+    "request": "^2.85.0"
   },
   "repository": {
     "type": "git",
