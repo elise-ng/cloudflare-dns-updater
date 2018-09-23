@@ -7,7 +7,7 @@ NodeJS Script for updating CloudFlare DNS record of servers with dynamic IP.
 * axios
 * public-ip
 
-Install everything with `npm install --save`
+Install everything with `npm install`
 
 ### Configurations
 Fill in your hostname, email and api token in `config.json`
