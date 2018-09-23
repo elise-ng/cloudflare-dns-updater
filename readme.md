@@ -4,7 +4,8 @@ NodeJS Script for updating CloudFlare DNS record of servers with dynamic IP.
 
 ## Getting Started
 ### Dependencies
-* Request
+* axios
+* public-ip
 
 Install everything with `npm install --save`
 
@@ -28,6 +29,3 @@ You may use crontab to schedule updates: (every 15 minutes in sample below)
 ```
 */15 * * * * /usr/local/bin/node /path/to/repo/index.js
 ```
-
-## Acknowledgments
-* ipify.org - API for getting public ip address
