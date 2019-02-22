@@ -11,10 +11,9 @@ async function main () {
       'X-Auth-Key': config.token
     }
 
-    // Get Public IP and Zone ID
+    // Get Zone ID
     const cfZoneIdReqUrl = `https://api.cloudflare.com/client/v4/zones?name=${encodeURI(`${config.hostname.split('.').reverse()[1]}.${config.hostname.split('.').reverse()[0]}`)}`
-    const [ip, cfZoneIdRes] = await Promise.all([publicIp.v4(), axios.get(cfZoneIdReqUrl, { headers: cfAuthHeaders })])
-    console.log('Public IP: ', ip)
+    const cfZoneIdRes = await axios.get(cfZoneIdReqUrl, { headers: cfAuthHeaders })
     if (cfZoneIdRes.data.result.length <= 0) { throw Error('Zone not found') }
     const cfZoneId = cfZoneIdRes.data.result[0].id
     console.log('Zone ID: ', cfZoneId)
