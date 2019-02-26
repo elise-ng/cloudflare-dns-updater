@@ -1,5 +1,6 @@
 {
   "hostname": "",
   "email": "",
-  "token": ""
+  "token": "",
+  "proxied": false
 }

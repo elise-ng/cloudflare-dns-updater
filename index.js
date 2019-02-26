@@ -5,7 +5,12 @@ const config = require('./config.json')
 async function main () {
   try {
     // Load Config
-    if (!config.hostname || !config.email || !config.token) { throw Error('Config missing') }
+    if (!config.hostname
+        || !config.email
+        || !config.token
+        || config.proxied === undefined) {
+      throw Error('Config missing');
+    }
     const cfAuthHeaders = {
       'X-Auth-Email': config.email,
       'X-Auth-Key': config.token
@@ -41,7 +46,8 @@ async function main () {
       const cfPutReqData = {
         'type': cfDnsRecord.type,
         'name': cfDnsRecord.name,
-        'content': content
+        'content': content,
+        'proxied': config.proxied
       }
       return axios.put(cfPutReqUrl, cfPutReqData, { headers: cfAuthHeaders })
     }))
