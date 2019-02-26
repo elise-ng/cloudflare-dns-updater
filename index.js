@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs')
 const axios = require('axios')
 const publicIp = require('public-ip')
 
@@ -6,34 +6,35 @@ function loadConfig() {
   // Guarantee that config.json exists. If it doesn't, create it, and tell the
   // user to edit it.
   try {
-    fs.accessSync('./config.json', fs.constants.R_OK);
+    fs.accessSync('./config.json', fs.constants.R_OK)
   } catch(err) {
-    fs.copyFileSync('./config.json.sample', './config.json');
-    console.log("Please set your options in config.json.");
-    process.exit();
+    fs.copyFileSync('./config.json.sample', './config.json')
+    console.log("Please set your options in config.json.")
+    process.exit()
   }
 
   // Make sure the configuration object has all the properties and values we
   // need it to have.
   const config = require('./config.json')
   if (typeof config.hostname !== 'string') {
-    throw Error("Misconfigured: config.json must have a 'hostname' string");
+    throw Error("Misconfigured: config.json must have a 'hostname' string")
   }
   if (typeof config.email !== 'string') {
-    throw Error("Misconfigured: config.json must have an 'email' string");
+    throw Error("Misconfigured: config.json must have an 'email' string")
   }
   if (typeof config.token !== 'string') {
-    throw Error("Misconfigured: config.json must have a 'token' string");
+    throw Error("Misconfigured: config.json must have a 'token' string")
   }
   if (typeof config.proxied !== 'boolean') {
-    throw Error("Misconfigured: config.json must have a 'proxied' boolean");
+    throw Error("Misconfigured: config.json must have a 'proxied' boolean")
   }
-  return config;
+  
+  return config
 }
 
 async function main () {
   try {
-    const config = loadConfig();
+    const config = loadConfig()
 
     const cfAuthHeaders = {
       'X-Auth-Email': config.email,
