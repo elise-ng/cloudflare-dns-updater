@@ -12,15 +12,18 @@ $ cd cloudflare-dns-updater
 $ npm install
 ```
 ### Configuration
-Fill in your hostname, email and api token in `config.json`
+Fill in your hostname and api key in `config.json`
+Generate an api key at [API Tokens Page](https://dash.cloudflare.com/profile/api-tokens), select Zone DNS Edit permission
 #### Sample JSON
 ```json
 {
   "hostname": "homelab.example.com",
-  "email": "user@example.com",
-  "token": "c2547eb745079dac9320b638f5e225cf483cc5cfdda41"
+  "bearerToken": "..."
 }
 ```
+
+In legacy versions we used the global api key to authenticate with Cloudflare API, see [the legacy sample here](./config.json.legacy.sample)
+
 ### Run
 ```sh
 $ node index.js

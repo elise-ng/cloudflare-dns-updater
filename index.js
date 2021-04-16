@@ -5,10 +5,21 @@ const config = require('./config.json')
 async function main () {
   try {
     // Load Config
-    if (!config.hostname || !config.email || !config.token) { throw Error('Config missing') }
-    const cfAuthHeaders = {
-      'X-Auth-Email': config.email,
-      'X-Auth-Key': config.token
+    if (!config.hostname) { 
+      throw Error('Hostname missing')
+    }
+    let cfAuthHeaders = {}
+    if (config.bearerToken) {
+      cfAuthHeaders = {
+        'Authorization': `Bearer ${config.bearerToken}`
+      }
+    } else if (config.email && config.token) {
+      cfAuthHeaders = {
+        'X-Auth-Email': config.email,
+        'X-Auth-Key': config.token
+      }
+    } else {
+      throw Error('Bearer Token or (Email + Key) missing')
     }
 
     // Get Zone ID
