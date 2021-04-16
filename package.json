@@ -9,8 +9,8 @@
   "author": "Chihim Ng",
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.18.0",
-    "public-ip": "^2.5.0"
+    "axios": "^0.21.1",
+    "public-ip": "^4.0.3"
   },
   "repository": {
     "type": "git",
