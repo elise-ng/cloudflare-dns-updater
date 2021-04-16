@@ -1,5 +1,4 @@
 {
   "hostname": "",
-  "email": "",
-  "token": ""
+  "bearerToken": ""
 }
