@@ -9,7 +9,7 @@
   "author": "Chihim Ng",
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "public-ip": "^4.0.3"
   },
   "repository": {
